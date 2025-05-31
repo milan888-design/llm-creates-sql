@@ -1,0 +1,37 @@
+Call python program from VB for NLP
+Sub btcreatespo_click(ByVal Sender As Object, ByVal e As EventArgs)
+        Dim strpyexe, strpyfile, strarg1, strarg2, strarg3, strall As String
+        Dim p As New Process
+        'p.StartInfo.Arguments = "c:\pyfiles\alm_nlp_entityextract.py" ' Replace with your Python script filename
+        'p.StartInfo.FileName = "C:\Users\milan\AppData\Local\Programs\Python\Python36\python.exe" ' Path to your Python interpreter
+        'p.Start()
+
+
+        strpyexe = "C:\Users\milan\AppData\Local\Programs\Python\Python36\python.exe"
+        strpyfile = "c:\pyfiles\alm_nlp_entityextract.py"
+        strarg1 = hdn_row_id.Text
+        strarg2 = ""
+        strarg3 = "spo_text"
+        If DDL_byrowid_or_batchid.SelectedValue = "batch_id" Then
+            strarg2 = "batch_id"
+        End If
+        If DDL_byrowid_or_batchid.SelectedValue = "row_id" Then
+            strarg2 = "row_id"
+        End If
+        strall = strpyexe + " " + strpyfile + " " + strarg1 + " " + strarg2 + " " + strarg3
+        p.StartInfo.FileName = strpyexe
+        p.StartInfo.Arguments = strpyfile + " " + strarg1 + " " + strarg2 + " " + strarg3
+        Try
+            'Shell("C:\Users\milan\AppData\Local\Programs\Python\Python36\python.exe c:\pyfiles\alm_nlp_entityextract.py mtp17nov23-95 row_id")
+            Shell(strall)
+            p.Start()
+            lbl_insertupdate_result.Text = "success in NLP"
+        Catch ex As Exception
+            Console.WriteLine(ex.Message)
+            'int_insertNode_result = 0
+            lbl_insertupdate_result.Text = "Error in NLP"
+        End Try
+
+        SetFocus(fld_spo_text_out)
+    End Sub
+
