@@ -1,0 +1,148 @@
+check SQL from LLM and fine tune it
+
+Public Sub Refresh1_Click()
+        btcopy_Click_generic()
+        SetFocus(btnrefresh)
+
+        If DDL_DBTARGET4SQL.SelectedValue = "datasum" Then
+            'sql_viewpointattributes.ConnectionString = glb_sConnection
+            'x_dsnids = glb_sConnection
+            'sql_viewpointattributes.ProviderName = glb_sDBConnectionType
+            If hdn_v_inst.Text = "2" Then
+                sql_viewpointattributes.ConnectionString = glb_mtpidea5_postgres_datasum
+                sql_viewpointattributes.ProviderName = glb_mtpidea5_postgres_datasum_type
+                x_dsnids = glb_mtpidea5_postgres_datasum
+            End If
+            If hdn_v_inst.Text = "1" Then
+                sql_viewpointattributes.ConnectionString = glb_mtplg15_postgres_datasum
+                sql_viewpointattributes.ProviderName = glb_mtplg15_postgres_datasum_type
+                x_dsnids = glb_mtplg15_postgres_datasum
+            End If
+        End If
+        If DDL_DBTARGET4SQL.SelectedValue = "datajoin" Then
+            'sql_viewpointattributes.ConnectionString = glb_sConnection2
+            'sql_viewpointattributes.ProviderName = glb_sDBConnectionType2
+            'x_dsnids = glb_sConnection2
+            If hdn_v_inst.Text = "2" Then
+                sql_viewpointattributes.ConnectionString = glb_mtpidea5_postgres_datajoin
+                sql_viewpointattributes.ProviderName = glb_mtpidea5_postgres_datajoin_type
+                x_dsnids = glb_mtpidea5_postgres_datajoin
+            End If
+            If hdn_v_inst.Text = "1" Then
+                sql_viewpointattributes.ConnectionString = glb_mtplg15_postgres_datajoin
+                sql_viewpointattributes.ProviderName = glb_mtplg15_postgres_datajoin_type
+                x_dsnids = glb_mtplg15_postgres_datajoin
+            End If
+        End If
+
+        Dim sqlStatement As String = fld_chatgptresponse.Text
+        'sqlStatement = Replace(sqlStatement, "LIMIT 5;", "LIMIT " + DDL_SELECTTOP.SelectedValue + ";")
+        'sql_viewpointattributes.SelectCommand = sqlStatement
+        Dim semicolonPosition, limitposition As Integer
+        semicolonPosition = InStr(fld_chatgptresponse.Text, ";")
+        Dim segmentwithoutsemicolon, segmentwithoutlimit, updatedSqlString As String
+        ' Check if the string "select" is within the variable
+        If InStr(sqlStatement, "SELECT") > 0 Then
+            Console.WriteLine("The variable contains the text 'select'.")
+            'sqlStatement = Replace(sqlStatement, "~", "'")
+            'sqlStatement = Replace(sqlStatement, "!", """")
+            ' Check if a semicolon is found
+            If semicolonPosition > 0 Then
+                ' Extract the segment from the start to the semicolon position
+
+                'segmentwithoutsemicolon = Left(fld_chatgptresponse.Text, semicolonPosition - 1)
+                segmentwithoutsemicolon = fld_chatgptresponse.Text.Substring(0, semicolonPosition - 1)
+
+                lbl_chatgrp_refresh.Text = "Segment up to semicolon: "
+                'segment = segment + " LIMIT " + DDL_SELECTTOP.SelectedValue + ";"
+                ' Print the result Console.WriteLine("Segment up to semicolon: " & segment)
+                'sql_viewpointattributes.SelectCommand = segment
+                'fld_sqlresult.Text = segment
+            Else
+                Console.WriteLine("No semicolon found in the string.")
+                lbl_chatgrp_refresh.Text = "No semicolon found in the string."
+                segmentwithoutsemicolon = fld_chatgptresponse.Text
+            End If
+
+            limitposition = InStr(segmentwithoutsemicolon, "LIMIT")
+            If limitposition > 0 Then
+                ' Extract the segment from the start to the semicolon position
+
+                'segmentwithoutlimit = Left(segmentwithoutsemicolon, limitposition - 1)
+                segmentwithoutlimit = segmentwithoutsemicolon.Substring(0, limitposition - 1)
+
+                lbl_chatgrp_refresh.Text = "Segment up to limit"
+                segmentwithoutlimit = segmentwithoutlimit + " LIMIT " + DDL_SELECTTOP.SelectedValue + ";"
+                ' Print the result Console.WriteLine("Segment up to semicolon: " & segment)
+                'sql_viewpointattributes.SelectCommand = segment
+                fld_sqlresult.Text = segmentwithoutlimit
+            Else
+                Console.WriteLine("No semicolon found in the string.")
+                lbl_chatgrp_refresh.Text = "No semicolon found in the string."
+                If DDL_DBTARGET4SQL.SelectedValue = "datasum" Then
+                    segmentwithoutsemicolon = segmentwithoutsemicolon + " LIMIT " + DDL_SELECTTOP.SelectedValue + ";"
+                End If
+                If DDL_DBTARGET4SQL.SelectedValue = "datajoin" Then
+                    'segmentwithoutsemicolon = segmentwithoutsemicolon + " and zip_code_database_with_lat_lon.zip='" + fld_zip_code.Text + "'"
+                    'segmentwithoutsemicolon = segmentwithoutsemicolon + " LIMIT " + DDL_SELECTTOP.SelectedValue + ";"
+                    If InStr(sqlStatement, "07728") > 0 Then
+                        updatedSqlString = Replace(segmentwithoutsemicolon, "07728", fld_zip_code.Text)
+                        segmentwithoutsemicolon = updatedSqlString + " LIMIT " + DDL_SELECTTOP.SelectedValue + ";"
+                    Else
+                        fld_sqlresult.Text = "did not find 07728"
+                    End If
+
+                End If
+                ' Print the result Console.WriteLine("Segment up to semicolon: " & segment)
+                'sql_viewpointattributes.SelectCommand = segment
+                fld_sqlresult.Text = segmentwithoutsemicolon
+
+                End If
+                'sqlStatement = Replace(sqlStatement, "LIMIT 5;", "LIMIT " + DDL_SELECTTOP.SelectedValue + ";")
+                'sql_viewpointattributes.SelectCommand = sqlStatement
+                'fld_sqlresult.Text = sqlStatement
+                Else
+            Console.WriteLine("The variable does not contain the text 'select'.")
+            fld_sqlresult.Text = "Rewrite your question so that chatgpt is able to create proper query"
+        End If
+        'trying the sql built in fld_sqlresult field below, if success then give to gridview sql
+        If Not String.IsNullOrEmpty(fld_sqlresult.Text) Then
+            'v_row_id = System.Guid.NewGuid().ToString()
+            'MsgBox(strinsertinto)
+            Dim sqlConnection As New System.Data.Odbc.OdbcConnection
+            Dim sqlReader As System.Data.Odbc.OdbcDataReader
+            Dim sqlCommand As New System.Data.Odbc.OdbcCommand
+
+            'x_dsnids = glb_sConnection
+
+            'XXXX
+            sqlConnection.ConnectionString = (x_dsnids)
+            sqlCommand.Connection = sqlConnection
+            'sqlCommand.CommandText = strcolumns
+            fld_sqlresult.Text = Replace(fld_sqlresult.Text, "~", "'")
+            fld_sqlresult.Text = Replace(fld_sqlresult.Text, "!", """")
+            sqlCommand.CommandText = fld_sqlresult.Text
+            lbl_strsql.Text = fld_sqlresult.Text
+            Try
+                sqlConnection.Open()
+                sqlReader = sqlCommand.ExecuteReader()
+                'int_insertNode_result = 1
+                While (sqlReader.Read() = True)
+                    Dim str_insert_result As String
+                    str_insert_result = sqlReader(0).ToString()
+                End While
+                sqlConnection.Close()
+                lbl_chatgrp_refresh.Text = "retrieve with sql success"
+                sql_viewpointattributes.SelectCommand = fld_sqlresult.Text
+
+            Catch ex As Exception
+                Console.WriteLine(ex.Message)
+                'int_insertNode_result = 0
+                lbl_chatgrp_refresh.Text = "retrieve FAILED"
+            End Try
+        Else
+            lbl_chatgrp_refresh.Text = "fld_sqlresult is empty"
+        End If
+
+        'run the segment sql statement here and if there is no error then assign to gridview sql
+    End Sub
