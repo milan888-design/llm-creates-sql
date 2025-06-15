@@ -18,7 +18,14 @@ LLM return SQL that can answer the question
 Check if SQL syntax is correct  
 Run the SQL for the database to produce results  
 
-Schema analysis
-Schema changes
-local vs hosted (cloud)  AI model LLM
+Topics list:  
+Schema types  
+Schema changes  
+How LLM generate SQL  
+local vs hosted (cloud) AI model LLM  
+Access to (cloud) AI model LLM  
+Download AI models  
+Python codes  
+ 
+
 
