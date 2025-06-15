@@ -18,7 +18,7 @@ LLM return SQL that can answer the question
 Check if SQL syntax is correct  
 Run the SQL for the database to produce results  
 
-Topics list:  
+## Topics list:  
 Schema types  
 Schema changes  
 How LLM generate SQL  
