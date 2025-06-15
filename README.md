@@ -20,12 +20,20 @@ Run the SQL for the database to produce results
 
 ```mermaid
 flowchart TD
-    A[Christmas] -->|Get money| B(Go shopping)
-    B --> C{Let me think}
-    C -->|One| D[Laptop]
-    C -->|Two| E[iPhone]
-    C -->|Three| F[fa:fa-car Car]
+    A[user] -->|question| B(program)
+    B --> |question and schema| C[AI-LLM]
+    C --> D{error check sql}
+    D -->|no error| E[Database]
+    D -->|errors| F[manual sql]
+    E -->|results| A[user]
 ```
+
+  A.User submit question-->B.Program sends question and schema;
+  B.Program sends question and schema-->C.LLM translate question to SQL;
+  C.LLM translate question to SQL-->D.Program error check SQL;
+  D.Program error check SQL-->E.Manual SQL needed;
+  D.Program error check SQL-->F.Submit SQL to DB;
+  F.Submit SQL to DB-->G.Results to user;
 
 ## Topics list:  
 Schema types  
