@@ -28,6 +28,10 @@ flowchart TD
     D -->|errors| F[manual sql]
     E -->|results| A[user]
 ```
+Notes:  
+question and schema(Call python program from VB for LLM.txt)  
+AI-LLM(alm_openai_chatgpt_sql_v2.py)  
+error check sql(check SQL from LLM and fine tune it.txt)  
 
 ## Topics list:  
 Schema types  
