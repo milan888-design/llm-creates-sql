@@ -18,6 +18,16 @@ LLM return SQL that can answer the question
 Check if SQL syntax is correct  
 Run the SQL for the database to produce results  
 
+```mermaid
+graph TD;
+  A.User submit question-->B.Program sends question and schema;
+  B.Program sends question and schema-->C.LLM translate question to SQL;
+  C.LLM translate question to SQL-->D.Program error check SQL;
+  D.Program error check SQL-->E.Manual SQL needed;
+  D.Program error check SQL-->F.Submit SQL to DB;
+  F.Submit SQL to DB-->G.Results to user;
+```
+
 ## Topics list:  
 Schema types  
 Schema changes  
